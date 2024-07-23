@@ -1,33 +1,59 @@
 "use client";
 
-import globalState from "@/utils/GlobalState";
-import { useState } from "react";
 import type { Aluno } from "./interfaces";
+import { ValidateResult, useForm } from "react-hook-form";
+import {
+  AlunoContainer,
+  AlunoForm,
+  AlunoSection,
+  FormInput,
+  LogoIcon,
+  LogoSection,
+} from "./style";
+
+const initalValues = {
+  username: "Bruno",
+  password: "12345",
+};
 
 export default function Aluno() {
-  // Exemplo estado, com gerador de efeito colateral na aplicação
-  const [name, setName] = useState("");
-  // Exemplo de uso dos utility types do typescript
-  const pessoa: Partial<Aluno> = {};
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ defaultValues: initalValues, mode: "onBlur" });
+  const LOGO_TXT = "Let's Make it Happen Together!";
+  const formatDate = (date: string): string => date.replace(/-/g, "/");
 
-  const handleSetName = () => {
-    // Exemplo de localstorage e sessionStorage
-    localStorage.setItem("username", globalState.getValue("username"));
-    sessionStorage.setItem("username", globalState.getValue("username"));
-    // Exemplo de estado global com uso de Singleton
-    setName(globalState.getValue("username"));
+  const validatePasswordComplexity = (formField: string): ValidateResult => {
+    if (formField.length < 10) {
+      return "Essa senha não atende aos critérios";
+    }
+  };
+
+  const onSubmit = (form: Record<string, string>) => {
+    console.log(form);
+    // TODO
   };
 
   return (
-    <>
-      <input
-        name={globalState.getValue("username")}
-        onChange={(evt) => {
-          globalState.setValue("username", evt.currentTarget.value);
-        }}
-      />
-      <button onClick={() => handleSetName()}>Exibir Valor</button>
-      <span>{name}</span>
-    </>
+    <AlunoContainer>
+      <AlunoSection>
+        <LogoSection>
+          <LogoIcon>{LOGO_TXT}</LogoIcon>
+        </LogoSection>
+        <AlunoForm onSubmit={handleSubmit(onSubmit)}>
+          <FormInput {...register("username", { required: true })} />
+          <FormInput
+            {...register("password", {
+              validate: {
+                complexity: validatePasswordComplexity,
+              },
+            })}
+          />
+          <button type="submit">Enviar Formulário</button>
+        </AlunoForm>
+      </AlunoSection>
+    </AlunoContainer>
   );
 }
