@@ -15,7 +15,7 @@ export const AlunoSection = styled.section`
   grid-template-columns: repeat(2, 1fr);
 
   @media (max-width: 768px) {
-    grid-template-columns: 1fr imor !important;
+    grid-template-columns: 1fr;
   }
 `;
 
